@@ -1,0 +1,82 @@
+# ============================================================
+# Unity 项目忽略规则
+# 仓库根目录 = kuerss，Unity 工程在 "Market 3D project/" 下，
+# 所以规则**故意不带**开头的 "/"，让它们在任意层级都能命中。
+#
+# 该提交的只有：Assets/、ProjectSettings/、Packages/，加根目录的说明文档。
+# ============================================================
+
+# ---------- Unity 每次打开都会重新生成的缓存 ----------
+[Ll]ibrary/
+[Tt]emp/
+[Oo]bj/
+[Bb]in/
+[Ll]ogs/
+[Uu]ser[Ss]ettings/
+[Mm]emory[Cc]aptures/
+[Rr]ecordings/
+[Ll]ocalHistory/
+[Bb]ackups/
+[Ee]xported[Oo]bj/
+
+# Unity 崩溃 / 临时文件
+sysinfo.txt
+crashlytics-build.properties
+*.tmp
+*.bak
+*.pidb
+*.pidb.meta
+*.pdb
+*.pdb.meta
+*.mdb
+*.mdb.meta
+*.opendb
+*.VC.db
+*.VC.opendb
+*.svd
+*.booproj
+
+# ---------- 构建产物 ----------
+[Bb]uild/
+[Bb]uilds/
+*.apk
+*.aab
+*.unitypackage
+*.app
+*.exe
+*.ipa
+
+# ---------- IDE / 自动生成的工程文件 ----------
+# Unity 会按需重建，提交上去只会不断冲突
+*.csproj
+*.unityproj
+*.sln
+*.suo
+*.user
+*.userprefs
+.vs/
+.vscode/
+.idea/
+.gradle/
+.consulo/
+
+# ---------- 不要忽略的 ----------
+# Unity 的 .meta 文件必须提交，否则资源引用会全断
+!*.meta
+# Unity 的包清单必须提交，删了工程就打不开
+!/**/[Pp]ackages/manifest.json
+!/**/[Pp]ackages/packages-lock.json
+!/**/[Pp]ackages/*.json
+!/**/[Pp]ackages/*.tgz
+
+# ---------- 系统垃圾 ----------
+Thumbs.db
+[Dd]esktop.ini
+$RECYCLE.BIN/
+*.lnk
+.DS_Store
+
+# ---------- 打包 / 发布 ----------
+*.nupkg
+publish/
+artifacts/
