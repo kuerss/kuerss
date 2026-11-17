@@ -268,16 +268,74 @@ namespace TenPercent2D.Market3D
 
             CacheTargets();
             TodState state = FromPreset(presets[index]);
+            ApplyCelestialPaths(ref state, presets[index].hour);
             m_Clock = Mathf.Repeat(presets[index].hour, HoursPerDay);
             m_DisplayHour = m_Clock;
             ApplyState(state);
+        }
+
+        // ================= 太阳 / 月亮轨迹 =================
+        // 把街道朝向当成“西”：+z 是西（落日方向），+x 是北，+y 是天顶。
+        // 太阳绕天极 P 转（P 在正北、高度 45°），18:20 恰好经过原来黄昏的太阳位置；
+        // 月亮同样绕 P 转，23:00 恰好经过原来星空夜的月亮位置。
+        // 这样 10:00 / 15:00 / 17:00 / 19:00 的太阳高度都按真实日轨变化，
+        // 不再是三套预设的太阳位置硬插值。
+        public const float DuskSunHour = 18.34f;
+        public const float NightMoonHour = 23f;
+        public const float CelestialDegreesPerHour = 15f;
+        public const float CelestialPoleAltitude = 45f;
+
+        static readonly Vector3 CelestialPole = new Vector3(
+            Mathf.Cos(CelestialPoleAltitude * Mathf.Deg2Rad),
+            Mathf.Sin(CelestialPoleAltitude * Mathf.Deg2Rad),
+            0f).normalized;
+
+        static readonly Vector3 DuskSunDir = new Vector3(-0.055f, 0.078f, 1f).normalized;
+        static readonly Vector3 NightMoonDir = new Vector3(-0.12f, 0.25f, 1f).normalized;
+
+        public static Vector3 SunDirection(float hour)
+        {
+            return (Quaternion.AngleAxis((hour - DuskSunHour) * CelestialDegreesPerHour, CelestialPole) * DuskSunDir).normalized;
+        }
+
+        public static Vector3 MoonDirection(float hour)
+        {
+            return (Quaternion.AngleAxis((hour - NightMoonHour) * CelestialDegreesPerHour, CelestialPole) * NightMoonDir).normalized;
+        }
+
+        static float HorizonVisibility(Vector3 dir)
+        {
+            // 太阳/月亮落到地平线以下就收掉本体和光照，避免“地下月亮”继续打光。
+            return Mathf.SmoothStep(0f, 1f, Mathf.InverseLerp(-0.06f, 0.03f, dir.y));
+        }
+
+        static void ApplyCelestialPaths(ref TodState s, float hour)
+        {
+            s.sunDir = SunDirection(hour);
+            s.moonDir = MoonDirection(hour);
+
+            float sunVis = HorizonVisibility(s.sunDir);
+            float moonVis = HorizonVisibility(s.moonDir);
+
+            s.sunLightIntensity *= sunVis;
+            s.sunDisc *= sunVis;
+            s.sunHalo *= sunVis;
+
+            s.moonLightIntensity *= moonVis;
+            s.moonDisc *= moonVis;
+            s.moonGlow *= moonVis;
         }
 
         // ================= 时间轴求值 =================
         public TodState EvaluateAtHour(float hour)
         {
             if (presets == null || presets.Length == 0) return default;
-            if (keyframes == null || keyframes.Length < 2) return FromPreset(presets[0]);
+            if (keyframes == null || keyframes.Length < 2)
+            {
+                TodState fallback = FromPreset(presets[0]);
+                ApplyCelestialPaths(ref fallback, hour);
+                return fallback;
+            }
 
             float h = Mathf.Repeat(hour, HoursPerDay);
             int n = keyframes.Length;
@@ -299,10 +357,14 @@ namespace TenPercent2D.Market3D
                 float t = Mathf.InverseLerp(ah, bh, hh);
                 TimeOfDayPreset pa = presets[Mathf.Clamp(a.preset, 0, presets.Length - 1)];
                 TimeOfDayPreset pb = presets[Mathf.Clamp(b.preset, 0, presets.Length - 1)];
-                return Blend(FromPreset(pa), FromPreset(pb), Smooth(t));
+                TodState state = Blend(FromPreset(pa), FromPreset(pb), Smooth(t));
+                ApplyCelestialPaths(ref state, h);
+                return state;
             }
 
-            return FromPreset(presets[0]);
+            TodState fallbackState = FromPreset(presets[0]);
+            ApplyCelestialPaths(ref fallbackState, h);
+            return fallbackState;
         }
 
         int NearestPresetIndex(float hour)
@@ -414,8 +476,6 @@ namespace TenPercent2D.Market3D
             s.skyCloudLit = k.cloudLit;
             s.skyCloudDark = k.cloudDark;
 
-            s.sunDir = k.sunDir.normalized;
-            s.moonDir = k.moonDir.normalized;
             s.sunSize = k.sunSize;
             s.sunDisc = k.sunDisc;
             s.sunHalo = k.sunHalo;
@@ -489,8 +549,6 @@ namespace TenPercent2D.Market3D
             s.skyCloudLit = Color.Lerp(a.skyCloudLit, b.skyCloudLit, t);
             s.skyCloudDark = Color.Lerp(a.skyCloudDark, b.skyCloudDark, t);
 
-            s.sunDir = Vector3.Slerp(a.sunDir, b.sunDir, t).normalized;
-            s.moonDir = Vector3.Slerp(a.moonDir, b.moonDir, t).normalized;
             s.sunSize = Mathf.Lerp(a.sunSize, b.sunSize, t);
             s.sunDisc = Mathf.Lerp(a.sunDisc, b.sunDisc, t);
             s.sunHalo = Mathf.Lerp(a.sunHalo, b.sunHalo, t);

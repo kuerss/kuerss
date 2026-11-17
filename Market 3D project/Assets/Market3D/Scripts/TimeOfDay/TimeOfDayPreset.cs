@@ -53,7 +53,6 @@ namespace TenPercent2D.Market3D
             [Header("太阳")]
             public Color glow = new Color(1.00f, 0.46f, 0.15f);
             public Color sunColor = new Color(1.00f, 0.82f, 0.52f);
-            public Vector3 sunDir = new Vector3(-0.055f, 0.078f, 1f);
             [Range(0.9f, 0.99995f)] public float sunSize = 0.99974f;
             [Range(0f, 3f)] public float sunDisc = 1f;
             [Range(0f, 3f)] public float sunHalo = 1f;
@@ -61,7 +60,6 @@ namespace TenPercent2D.Market3D
             [Header("月亮")]
             public Color moonColor = new Color(0.90f, 0.94f, 1.00f);
             public Color moonGlowColor = new Color(0.45f, 0.62f, 1.00f);
-            public Vector3 moonDir = new Vector3(-0.12f, 0.25f, 1f);
             [Range(0.9f, 0.99995f)] public float moonSize = 0.99962f;
             [Range(0f, 3f)] public float moonDisc = 0f;
             [Range(0f, 3f)] public float moonGlow = 0f;
@@ -125,11 +123,6 @@ namespace TenPercent2D.Market3D
             return new Color(r, g, b, 1f);
         }
 
-        static Vector3 Dir(float x, float y, float z)
-        {
-            return new Vector3(x, y, z).normalized;
-        }
-
         /// <summary>白天 / 黄昏 / 星空夜。数组顺序就是 HUD 上 1 / 2 / 3 的顺序。</summary>
         public static TimeOfDayPreset[] CreateDefaults()
         {
@@ -141,7 +134,7 @@ namespace TenPercent2D.Market3D
             return new TimeOfDayPreset
             {
                 name = "DAY",
-                hour = 10f,
+                hour = 14f,
                 sky = new SkySettings
                 {
                     top = C(0.090f, 0.280f, 0.720f),
@@ -151,13 +144,11 @@ namespace TenPercent2D.Market3D
                     ground = C(0.240f, 0.260f, 0.300f),
                     glow = C(1.000f, 0.940f, 0.820f),
                     sunColor = C(1.000f, 0.970f, 0.900f),
-                    sunDir = Dir(-0.16f, 0.58f, 1f),
                     sunSize = 0.99978f,
                     sunDisc = 0.85f,
                     sunHalo = 0.55f,
                     moonColor = C(0.85f, 0.90f, 1f),
                     moonGlowColor = C(0.55f, 0.70f, 1f),
-                    moonDir = Dir(0.35f, -0.35f, 1f),
                     moonSize = 0.99962f,
                     moonDisc = 0f,
                     moonGlow = 0f,
@@ -223,13 +214,11 @@ namespace TenPercent2D.Market3D
                     ground = C(0.20f, 0.10f, 0.13f),
                     glow = C(1.00f, 0.46f, 0.15f),
                     sunColor = C(1.00f, 0.82f, 0.52f),
-                    sunDir = Dir(-0.055f, 0.078f, 1f),
                     sunSize = 0.99974f,
                     sunDisc = 1f,
                     sunHalo = 1f,
                     moonColor = C(0.90f, 0.94f, 1.00f),
                     moonGlowColor = C(0.45f, 0.62f, 1.00f),
-                    moonDir = Dir(-0.12f, 0.25f, 1f),
                     moonSize = 0.99962f,
                     moonDisc = 0f,
                     moonGlow = 0f,
@@ -295,13 +284,11 @@ namespace TenPercent2D.Market3D
                     ground = C(0.008f, 0.010f, 0.018f),
                     glow = C(0.070f, 0.110f, 0.240f),
                     sunColor = C(1.00f, 0.82f, 0.52f),
-                    sunDir = Dir(-0.02f, -0.18f, 1f),
                     sunSize = 0.99974f,
                     sunDisc = 0f,
                     sunHalo = 0f,
                     moonColor = C(0.88f, 0.93f, 1.00f),
                     moonGlowColor = C(0.42f, 0.60f, 1.00f),
-                    moonDir = Dir(-0.12f, 0.25f, 1f),
                     moonSize = 0.99960f,
                     moonDisc = 1.00f,
                     moonGlow = 0.45f,

@@ -50,7 +50,7 @@ Material:
     - _LowColor: {r: 0.98, g: 0.4, b: 0.38, a: 1}
     - _MidColor: {r: 0.46, g: 0.155, b: 0.415, a: 1}
     - _MoonColor: {r: 0.9, g: 0.94, b: 1, a: 1}
-    - _MoonDir: {r: -0.11563613, g: 0.24090861, b: 0.96363443, a: 0}
+    - _MoonDir: {r: -0.63852054, g: 0.763793, b: 0.09440244, a: 0}
     - _MoonGlowColor: {r: 0.45, g: 0.62, b: 1, a: 1}
     - _StarColor: {r: 0.88, g: 0.93, b: 1, a: 1}
     - _SunColor: {r: 1, g: 0.82, b: 0.52, a: 1}
